@@ -1,0 +1,45 @@
+from collections import defaultdict
+
+def DfsShortestPath(graph, start, end):
+    stack = [(start, [start], 0)]  # Add weight information to the stack
+    visited = []
+
+    while stack:
+        node, path, total_weight = stack.pop()
+
+        if node not in visited:
+            visited.append(node)
+
+            if node == end:
+                return path, visited
+
+            for neighbor, weight in graph[node]:  # Iterate through neighbors with weights
+                if neighbor not in visited and neighbor not in [n for n, _, _ in stack]:
+                    stack.append((neighbor, path + [neighbor], total_weight + weight))
+
+    return None, visited
+
+# Create the graph as an adjacency list with weights
+def create_weighted_graph():
+    graph = defaultdict(list)
+    n = int(input("Enter the number of edges: "))
+    for _ in range(n):
+        u, v, weight = input("Enter edge and weight (u v weight): ").split()
+        graph[u].append((v, int(weight)))
+        graph[v].append((u, int(weight)))
+    return graph
+
+# Take user inputs for weighted graph, starting node, and destination node
+graph = create_weighted_graph()
+StartNode = input("Enter the starting node: ")
+EndNode = input("Enter the destination node: ")
+print("\n")
+
+# Find the shortest path using DFS
+ShortestPath, visited_nodes = DfsShortestPath(graph, StartNode, EndNode)
+
+if ShortestPath:
+    print(f"Shortest path from {StartNode} to {EndNode}: {' -> '.join(ShortestPath)}")
+    print("Visited nodes:", ', '.join(visited_nodes))
+else:
+    print(f"No path found from {StartNode} to {EndNode}")
