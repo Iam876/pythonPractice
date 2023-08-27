@@ -1,0 +1,99 @@
+from collections import defaultdict
+
+def DfsShortestPath(graph, start, end):
+    stack = [(start, [start])]
+    visited = []
+
+    while stack:
+        node, path = stack.pop()
+
+        if node not in visited:
+            visited.append(node)
+
+            if node == end:
+                return path, visited
+
+            for neighbor in graph[node][::-1]:
+                if neighbor not in visited and neighbor not in [n for n, _ in stack]:
+                    stack.append((neighbor, path + [neighbor]))
+
+    return None, visited
+
+def DfsWeightedShortestPath(graph, start, end):
+    stack = [(start, [start], 0)]  # Add weight information to the stack
+    visited = []
+
+    while stack:
+        node, path, total_weight = stack.pop()
+
+        if node not in visited:
+            visited.append(node)
+
+            if node == end:
+                return path, visited
+
+            for neighbor, weight in graph[node]:
+                if neighbor not in visited and neighbor not in [n for n, _, _ in stack]:
+                    stack.append((neighbor, path + [neighbor], total_weight + weight))
+
+    return None, visited
+
+# Create the graph as an adjacency list
+def create_graph():
+    graph = defaultdict(list)
+    n = int(input("Enter the number of edges: "))
+    for _ in range(n):
+        u, v = input("Enter edge (u v): ").split()
+        graph[u].append(v)
+        graph[v].append(u)
+    return graph
+
+# Create the weighted graph as an adjacency list with weights
+def create_weighted_graph():
+    graph = defaultdict(list)
+    n = int(input("Enter the number of edges: "))
+    for _ in range(n):
+        u, v, weight = input("Enter edge and weight (u v weight): ").split()
+        graph[u].append((v, int(weight)))
+        graph[v].append((u, int(weight)))
+    return graph
+
+def main():
+    print("Choose an option:")
+    print("1. Unweighted Path")
+    print("2. Weighted Path")
+    choice = int(input("Enter option number: "))
+
+    if choice == 1:
+        graph = create_graph()
+        StartNode = input("Enter the starting node: ")
+        EndNode = input("Enter the destination node: ")
+        print("\n")
+
+        ShortestPath, visited_nodes = DfsShortestPath(graph, StartNode, EndNode)
+
+        if ShortestPath:
+            print(f"Shortest path from {StartNode} to {EndNode}: {' -> '.join(ShortestPath)}")
+            print("Visited nodes:", ', '.join(visited_nodes))
+        else:
+            print(f"No path found from {StartNode} to {EndNode}")
+
+    elif choice == 2:
+        graph = create_weighted_graph()
+        StartNode = input("Enter the starting node: ")
+        EndNode = input("Enter the destination node: ")
+        print("\n")
+
+        ShortestPath, visited_nodes = DfsWeightedShortestPath(graph, StartNode, EndNode)
+
+        if ShortestPath:
+            print(f"Shortest path from {StartNode} to {EndNode}: {' -> '.join(ShortestPath)}")
+            print("Visited nodes:", ', '.join(visited_nodes))
+        else:
+            print(f"No path found from {StartNode} to {EndNode}")
+
+    else:
+        print("Invalid choice")
+
+if __name__ == "__main__":
+    main()
